@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Gizra - UNDG</title>
+		<title>Gizra</title>
 
 		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
 		<meta name="author" content="Hakim El Hattab">
@@ -52,44 +52,16 @@
 					</span>
 				</section>
 
-				<!-- C4D Overview -->
+				<!-- UNFPA -->
+
 				<section>
-					<img src="https://cloud.githubusercontent.com/assets/125707/12972882/5623de7a-d0b1-11e5-81e4-743d6b65218f.jpg" alt="" class="stretch" />
+					<img src="https://cloud.githubusercontent.com/assets/125707/12973580/0d4c8788-d0b6-11e5-8f75-9de5e71cbcf3.jpg" alt="" class="stretch"/>
 
 					<aside class="notes">
-						Working groups (private/ public) <br>
-						breaking the silos
-					</aside>
-				</section>
-
-				<!-- C4D - Top -->
-				<section>
-					<img src="https://cloud.githubusercontent.com/assets/125707/12972882/5623de7a-d0b1-11e5-81e4-743d6b65218f.jpg" alt="" />
-
-					<aside class="notes">
-						Knowledge sharing <br>
-						Knowledge is lost when delegates leave <br>
-						Allow private space for experts <br>
-					</aside>
-				</section>
-
-				<!-- Projects overview -->
-				<section>
-					<img src="https://cloud.githubusercontent.com/assets/125707/12972881/561ec5d4-d0b1-11e5-8db7-aff1692d67fc.jpg" alt="" class="stretch" />
-
-					<aside class="notes">
-						Bridge in Chad <br>
-						Brochure site for the project <br>
-						Show case progress and success <br>
-					</aside>
-				</section>
-
-				<!-- Projects - Top -->
-				<section>
-					<img src="https://cloud.githubusercontent.com/assets/125707/12973359/7998fa68-d0b4-11e5-932f-6043768b8cf7.jpg" alt="" class="stretch" />
-
-					<aside class="notes">
-						Connected to OpSys system to get data (region, number, funds) <br>
+						Security audit, code review <br>
+						Continus integration - automatic tests <br>
+						Performance audit (reduce cache) <br>
+						Best practices
 					</aside>
 				</section>
 
@@ -138,7 +110,6 @@
 					<img src="https://cloud.githubusercontent.com/assets/125707/11951341/e3774082-a898-11e5-9ff4-7f322166372f.jpg" />
 				</section>
 
-
 				<!-- NegaWatt -->
 				<section>
 					<img src="https://cloud.githubusercontent.com/assets/125707/11421298/8f2481f4-943c-11e5-8317-1adbbe4f08cf.jpg" />
@@ -152,24 +123,197 @@
 				<section data-background-iframe="http://gfycat.com/ifr/SillyHauntingBlackwidowspider">
 				</section>
 
-				<!-- UNFPA -->
-
 				<section>
-					<img src="https://cloud.githubusercontent.com/assets/125707/12973580/0d4c8788-d0b6-11e5-8f75-9de5e71cbcf3.jpg" alt="" class="stretch"/>
-
-					<aside class="notes">
-						Security audit, code review <br>
-						Continus integration - automatic tests <br>
-						Performance audit (reduce cache) <br>
-						Best practices
-					</aside>
+					<h2>Development - It's easier than you think</h2>
+					<small>unless when it isn't</small>
 				</section>
 
-
-				<!-- Gizra Summary -->
 				<section>
-					<div>Gizra // 20+ people // Israel & US // Fancy clients</div>
+					<h3>Project Managment & Time Tracking example</h3>
 				</section>
+
+				<section>
+					<div>
+					<code>Work session</code>, <code>Time tracking</code>, <code>Payment</code>
+					, and <code>Github Issue</code> bundles are pointing at a <code>Project</code>,
+					which in turn points to an <code>Account</code> bundle. <code>Github Issue</code>
+					can also reference itself.
+					</div>
+				</section>
+
+				<section>
+					<img src="https://cloud.githubusercontent.com/assets/125707/13204223/318f7b76-d8d3-11e5-9f94-51832dad7da5.jpg" alt="" />
+				</section>
+
+				<section>
+					<h3>Every feature or bug has a price tag</h3>
+					<small>And you don't have to buy them all</small>
+				</section>
+
+				<section>
+					<h3>You don't need to understand code to know if it's bad</h3>
+				</section>
+
+				<!-- Good code -->
+				<section>
+					<pre>
+						<code data-trim data-noescape class="php">
+/**
+ * @file
+ * Turn Drupal to a RESTful server, following best practices.
+ */
+
+include_once __DIR__ . '/restful.entity.inc';
+include_once __DIR__ . '/restful.cache.inc';
+
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
+use Drupal\Component\Plugin\PluginBase;
+use Drupal\restful\Exception\RestfulException;
+use Drupal\restful\Http\HttpHeader;
+use Drupal\restful\Http\RequestInterface;
+use Drupal\restful\Http\ResponseInterface;
+use Drupal\restful\Plugin\resource\Decorators\CacheDecoratedResource;
+use Drupal\restful\Plugin\resource\Decorators\RateLimitDecoratedResource;
+use Drupal\restful\Plugin\resource\ResourceInterface;
+use Drupal\restful\RestfulManager;
+
+/**
+ * Implements hook_menu().
+ */
+function restful_menu() {
+  $base_path = variable_get('restful_hook_menu_base_path', 'api');
+  $items = array();
+  $plugins = restful()
+    ->getResourceManager()
+    ->getPlugins();
+  foreach ($plugins->getIterator() as $plugin) {
+    if (!$plugin instanceof ResourceInterface) {
+      // If the plugin is disabled $plugin gets set to NULL. If that is the case
+      // do not set any menu values based on it.
+      continue;
+    }
+    $plugin_definition = $plugin->getPluginDefinition();
+    if (!$plugin_definition['hookMenu']) {
+      // Plugin explicitly declared no hook menu should be created automatically
+      // for it.
+      continue;
+    }
+    $item = array(
+      'title' => $plugin_definition['name'],
+      'access callback' => RestfulManager::FRONT_CONTROLLER_ACCESS_CALLBACK,
+      'access arguments' => array($plugin_definition['resource']),
+      'page callback' => RestfulManager::FRONT_CONTROLLER_CALLBACK,
+      'page arguments' => array($plugin_definition['resource']),
+      'delivery callback' => 'restful_delivery',
+      'type' => MENU_CALLBACK,
+    );
+    // If there is no specific menu item allow the different version variations.
+    if (!isset($plugin_definition['menuItem'])) {
+      // Add the version string to the arguments.
+      $item['access arguments'][] = 1;
+      $item['page arguments'][] = 1;
+      // Ex: api/v1.2/articles
+      $items[$base_path . '/v' . $plugin_definition['majorVersion'] . '.' . $plugin_definition['minorVersion'] . '/' . $plugin_definition['resource']] = $item;
+      // Ex: api/v1/articles will use the latest minor version.
+      $items[$base_path . '/v' . $plugin_definition['majorVersion'] . '/' . $plugin_definition['resource']] = $item;
+      // Ex: api/articles will use the header or the latest version.
+      // Do not add the version string to the arguments.
+      $item['access arguments'] = $item['page arguments'] = array(1);
+      $items[$base_path . '/' . $plugin_definition['resource']] = $item;
+    }
+    else {
+      $path = implode('/', array($base_path, $plugin_definition['menuItem']));
+
+      // Remove trailing slashes that can lead to 404 errors.
+      $path = rtrim($path, '/');
+
+      $items[$path] = $item;
+    }
+  }
+
+  // Make sure the Login endpoint has the correct access callback.
+  if (!empty($items[$base_path . '/login'])) {
+    $items[$base_path . '/login']['access callback'] = 'user_is_anonymous';
+  }
+
+  // Add administration page.
+  $items['admin/config/services/restful'] = array(
+    'title' => 'RESTful',
+    'description' => 'Administer the RESTful module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('restful_admin_settings'),
+    'access arguments' => array('administer restful'),
+    'file' => 'restful.admin.inc',
+  );
+  $items['admin/config/services/restful/restful'] = $items['admin/config/services/restful'];
+  $items['admin/config/services/restful/restful']['type'] = MENU_DEFAULT_LOCAL_TASK;
+  // Add cache administration page.
+  $items['admin/config/services/restful/cache'] = array(
+    'title' => 'Cache',
+    'description' => 'Administer the RESTful module cache system.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('restful_admin_cache_settings'),
+    'access arguments' => array('administer restful'),
+    'file' => 'restful.cache.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function restful_permission() {
+  return array(
+    'administer restful' => array(
+      'title' => t('Administer the RESTful module'),
+      'description' => t('Access the administration pages for the RESTful module.'),
+    ),
+    'administer restful resources' => array(
+      'title' => t('Administer the resources'),
+      'description' => t('Perform operations on the resources.'),
+    ),
+    'restful clear render caches' => array(
+      'title' => t('Clear RESTful render caches'),
+      'description' => t('Clear the render caches and their correspoding cache fragments.'),
+    ),
+  );
+}
+
+/**
+ * Get the RestfulManager.
+ *
+ * Calling restful() from anywhere in the code will give you access to the
+ * RestfulManager. That in turn will provide you access to all the elements
+ * involved.
+ *
+ * @return RestfulManager
+ *   The manager.
+ */
+function restful() {
+  static $manager;
+  if (!isset($manager)) {
+    $manager = RestfulManager::createFromGlobals();
+  }
+  return $manager;
+}
+						</code>
+					</pre>
+
+				</section>
+
+				<!-- Medium code -->
+				<section>
+
+				</section>
+
+				<!-- Bad code -->
+				<section>
+
+				</section>
+
 
 				<!-- Last slide -->
 				<section data-background="https://cloud.githubusercontent.com/assets/125707/13070800/cf27ec14-d497-11e5-82e3-7cb9c73fe6be.jpg" class="present">
